@@ -78,6 +78,12 @@ def recibir_danio(self, danio_bruto: int, ignorar_defensa: float = 0.0) -> int:
 - **Eventos y callbacks:** Cada botón enlaza un callback (`_on_iniciar_combate`, `_on_ataque_basico`, `_on_usar_habilidad`, `_on_defender`) que invoca al `MotorCombate` y actualiza la interfaz mediante `_sincronizar_vista()`.
 - **Manejo de errores en GUI:** Si el usuario deja el nombre vacío o intenta ejecutar una acción inválida, la interfaz captura la excepción (`ValueError`, `RuntimeError`) y muestra un cuadro de diálogo informativo (`messagebox`) sin cerrar la aplicación.
 
+### Capturas de la interfaz
+
+![Pantalla de preparación](imagenes/configuracion.png)
+
+![Arena de combate](imagenes/combate.png)
+
 ---
 
 ## 6. Proceso de desarrollo

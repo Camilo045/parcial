@@ -48,8 +48,8 @@ sudo dnf install python3-tkinter
 ### Clonar e instalar dependencias de Python
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd rpg-combate-poo
+git clone https://github.com/Camilo045/parcial.git
+cd parcial
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -79,13 +79,16 @@ python3 -m unittest discover -s pruebas -v
    - Escribe el nombre de tu héroe en el campo **Nombre del héroe**.
    - Selecciona una clase (`Guerrero`, `Mago` o `Arquero`) y revisa sus estadísticas base, pasiva y habilidades.
    - Elige un rival en el menú desplegable y presiona **Iniciar Combate**.
-   *(Espacio reservado para captura de pantalla en `docs/imagenes/configuracion.png`)*
+
+   ![Pantalla de preparación](docs/imagenes/configuracion.png)
+
 2. **Arena de combate:**
    - En la parte superior se muestra el número de turno y el botón **Nueva Partida**.
    - En el centro aparecen las tarjetas de tu héroe y del oponente con sus barras de Vida (`PV`) y Energía (`EN`).
    - En la parte inferior selecciona tu acción: **Ataque Básico**, cualquiera de tus **2 habilidades especiales** (si tienes energía suficiente) o **Defender (+12 EN)**.
    - Consulta el **Registro de batalla** para seguir el daño infligido, curaciones y golpes críticos.
-   *(Espacio reservado para captura de pantalla en `docs/imagenes/combate.png`)*
+
+   ![Arena de combate](docs/imagenes/combate.png)
 
 ---
 
@@ -110,14 +113,21 @@ rpg-combate-poo/
 ├── pruebas/                        # Pruebas automatizadas
 │   ├── __init__.py
 │   └── test_combate.py             # Pruebas unitarias de POO, combate y errores
+├── recursos/                       # Retratos PNG de cada clase de personaje
+│   ├── arquero.png
+│   ├── guerrero.png
+│   ├── jefe.png
+│   └── mago.png
 └── docs/                           # Documentación técnica y evidencias
     ├── INFORME_TECNICO.md
     └── imagenes/
+        ├── combate.png
+        └── configuracion.png
 ```
 
 ---
 
 ## 9. Autor o autores
 
-- **Estudiante:** *(Completar con tu nombre completo y código/correo institucional)*
+- **Estudiante:** Camilo (GitHub: [Camilo045](https://github.com/Camilo045))
 - **Asignatura:** Programación Orientada a Objetos con Python
