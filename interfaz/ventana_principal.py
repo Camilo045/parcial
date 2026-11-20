@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from tkinter import messagebox
 
 import customtkinter as ctk
+from PIL import Image
 
 from modelos.personaje import Personaje
 from servicios.fabrica import (
@@ -15,6 +17,26 @@ from servicios.fabrica import (
 )
 from servicios.motor_combate import MotorCombate
 
+_RUTA_RECURSOS = Path(__file__).resolve().parent.parent / "recursos"
+_ARCHIVOS_RETRATO: dict[str, str] = {
+    "Guerrero": "guerrero.png",
+    "Mago": "mago.png",
+    "Arquero": "arquero.png",
+    "Jefe": "jefe.png",
+}
+
+
+def _cargar_retrato(tipo_clase: str, tamano: tuple[int, int]) -> ctk.CTkImage | None:
+    """Carga el retrato PNG correspondiente a la clase si existe en recursos/."""
+    nombre_archivo = _ARCHIVOS_RETRATO.get(tipo_clase)
+    if not nombre_archivo:
+        return None
+    ruta = _RUTA_RECURSOS / nombre_archivo
+    if not ruta.exists():
+        return None
+    imagen = Image.open(ruta)
+    return ctk.CTkImage(light_image=imagen, dark_image=imagen, size=tamano)
+
 
 class TarjetaCombatiente(ctk.CTkFrame):
     """Componente visual reutilizable que muestra el estado de un combatiente."""
@@ -22,21 +44,31 @@ class TarjetaCombatiente(ctk.CTkFrame):
     def __init__(self, master: ctk.CTkBaseClass, titulo_rol: str) -> None:
         super().__init__(master, corner_radius=12)
         self._titulo_rol = titulo_rol
+        self._imagen_actual: ctk.CTkImage | None = None
+
+        encabezado = ctk.CTkFrame(self, fg_color="transparent")
+        encabezado.pack(fill="x", padx=14, pady=(12, 8))
+
+        self._lbl_retrato = ctk.CTkLabel(encabezado, text="", width=78, height=78)
+        self._lbl_retrato.pack(side="left", padx=(0, 12))
+
+        info = ctk.CTkFrame(encabezado, fg_color="transparent")
+        info.pack(side="left", fill="both", expand=True)
 
         self._lbl_rol = ctk.CTkLabel(
-            self, text=titulo_rol, font=ctk.CTkFont(size=12, weight="bold")
+            info, text=titulo_rol, font=ctk.CTkFont(size=12, weight="bold")
         )
-        self._lbl_rol.pack(anchor="w", padx=14, pady=(10, 0))
+        self._lbl_rol.pack(anchor="w")
 
         self._lbl_nombre = ctk.CTkLabel(
-            self, text="", font=ctk.CTkFont(size=18, weight="bold")
+            info, text="", font=ctk.CTkFont(size=17, weight="bold")
         )
-        self._lbl_nombre.pack(anchor="w", padx=14, pady=(2, 4))
+        self._lbl_nombre.pack(anchor="w", pady=(2, 2))
 
         self._lbl_estado = ctk.CTkLabel(
-            self, text="", font=ctk.CTkFont(size=12), text_color="#60A5FA"
+            info, text="", font=ctk.CTkFont(size=12), text_color="#60A5FA"
         )
-        self._lbl_estado.pack(anchor="w", padx=14, pady=(0, 6))
+        self._lbl_estado.pack(anchor="w")
 
         self._lbl_vida = ctk.CTkLabel(self, text="PV: 0 / 0", font=ctk.CTkFont(size=13))
         self._lbl_vida.pack(anchor="w", padx=14)
@@ -64,6 +96,8 @@ class TarjetaCombatiente(ctk.CTkFrame):
 
     def actualizar(self, personaje: Personaje) -> None:
         """Sincroniza los controles de la tarjeta con el estado del personaje."""
+        self._imagen_actual = _cargar_retrato(personaje.tipo_clase, (78, 78))
+        self._lbl_retrato.configure(image=self._imagen_actual)
         self._lbl_nombre.configure(text=f"{personaje.nombre} ({personaje.tipo_clase})")
 
         if not personaje.esta_vivo:
@@ -161,15 +195,22 @@ class VentanaPrincipal(ctk.CTk):
         )
         self._selector_clase.pack(fill="x", pady=(0, 8))
 
+        preview_box = ctk.CTkFrame(formulario, fg_color="transparent")
+        preview_box.pack(fill="x", pady=(4, 16))
+
+        self._img_preview_clase: ctk.CTkImage | None = None
+        self._lbl_preview_imagen = ctk.CTkLabel(preview_box, text="", width=92, height=92)
+        self._lbl_preview_imagen.pack(side="left", padx=(0, 14))
+
         self._lbl_preview_clase = ctk.CTkLabel(
-            formulario,
+            preview_box,
             text="",
             font=ctk.CTkFont(size=12),
             justify="left",
-            wraplength=580,
+            wraplength=480,
             text_color="#D1D5DB",
         )
-        self._lbl_preview_clase.pack(anchor="w", pady=(0, 16))
+        self._lbl_preview_clase.pack(side="left", fill="x", expand=True)
         self._actualizar_preview_clase(CLASES_JUGADOR[0])
 
         ctk.CTkLabel(
@@ -274,6 +315,8 @@ class VentanaPrincipal(ctk.CTk):
 
     def _actualizar_preview_clase(self, clase: str) -> None:
         ejemplo = crear_personaje(clase, "Vista Previa")
+        self._img_preview_clase = _cargar_retrato(ejemplo.tipo_clase, (92, 92))
+        self._lbl_preview_imagen.configure(image=self._img_preview_clase)
         habilidades = ", ".join(
             f"{h.nombre} ({h.costo_energia} EN)" for h in ejemplo.habilidades
         )
